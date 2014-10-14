@@ -291,9 +291,7 @@ err message displayed as expected
 ./bounded-buffer 0 5 5 10
 ```
 
-should display
-```
- only the initial buffer and show the results with 0 produced and consumed because no time for prodecers and consumers to execute.
+should display only the initial buffer and show the results with 0 produced and consumed because no time for prodecers and consumers to execute.
 display:
 ```
 Buffer Size               :  10
