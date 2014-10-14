@@ -15,19 +15,19 @@ By specifyiny the numbers of buffer size b, time to live t , producers p and con
 A Makefile is provided in this assignment.
 To compile the application, use the command:
 
-    ```$ make```
+    `$ make`
 
 
 To remove the application, please use:
 
-    ```$ make clean```
+    `$ make clean`
 
 ---
 ## How to run:
 
 To run the program from the command line, simply execute the following command just as you did to run other programs before
 
-    ```$ ./bouned-buffer t p c b```
+    `$ ./bouned-buffer t p c b`
 
 while t, p, c, b are input by user which stands for the numbers of time, producer, consumer and buffer size sequentially. And b can be left empty and in that case the buffer size will be defaulted to be 10.
 
@@ -138,7 +138,7 @@ Consumed   |   27
 
 type in the following command to test:
 
-    ```make check```
+    `make check`
 
 ---
 
