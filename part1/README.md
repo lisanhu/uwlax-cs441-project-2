@@ -276,9 +276,7 @@ correct.
 ```
 ./bounded-buffer 2 2 2 0
 ```
-should display
-```
- error message
+should display error message
 displays:
 ```
 "Please enter valid numbers
@@ -432,15 +430,6 @@ Consumed   |   16
 
 correct.
 
-# test case 9
-# test case 10
-# test case 11
-# test case 12
-# test case 13
-# test case 14
-# test case 15
-# test case 16
-# test case 17
 ---
 
 ## Known bugs & limitations:
