@@ -29,8 +29,10 @@ To run the program from the command line, simply execute the following command j
 ```
     $ ./bouned-buffer t p c [b]
 ```
-while t, p, c, b are input by user which stands for the numbers of time, producer, consumer and buffer size sequentially. And b can be left empty and in that case the buffer size will be defaulted to be 10.
-
+while t, p, c, b are input by user which stands for the numbers of time, producer, consumer and buffer size sequentially. And b can be left empty and in that case the buffer size will be defaulted to be 10, as shown below.
+```
+$ ./bouned-buffer t p c 
+```
 ---
 ## Example(s):
 This example runs with a simple input command `./bounded-buffer 2 2 1 4`.(note: That the results generate will differ from each time running as values and sequences are randomly generated.)
@@ -136,10 +138,7 @@ Consumed   |   27
 ---
 ## How to test:
 
-type in the following command to test:
-```
-    make check
-```
+there is no make check script for this program.
 ---
 
 ## Known bugs & limitations:
