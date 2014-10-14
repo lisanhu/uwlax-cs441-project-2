@@ -1,5 +1,5 @@
 /*
- * Sanhu Li
+ * Sanhu Li, Huifeng Zhang
  * Oct. 14, 2014
  * CS 441/541: Bounded Buffer (Project 2 Part 1)
  *
