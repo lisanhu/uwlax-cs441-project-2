@@ -59,10 +59,10 @@ int read_remove() {
 
 //    pthread_mutex_lock(&mutex);
     val = buffer[r++];
+    buffer[r - 1] = -1;
     while (r >= BUFFER_SIZE) {
         r -= BUFFER_SIZE;
     }
-    buffer[r - 1] = -1;
 //    pthread_mutex_unlock(&mutex);
 
     return val;
@@ -208,16 +208,16 @@ char *buf_to_str(const int *buf) {
     for (i = 0; i < BUFFER_SIZE; ++i) {
         sprintf(tmp, "%4d", buf[i]);
         strcat(str, tmp);
-        if (rr == i) {
-            sprintf(tmp, "v");
-            strcat(str, tmp);
-        }
 
         if (ww == i) {
             sprintf(tmp, "^");
             strcat(str, tmp);
         }
 
+        if (rr == i) {
+            sprintf(tmp, "v");
+            strcat(str, tmp);
+        }
     }
     sprintf(tmp, "]");
     strcat(str, tmp);
