@@ -136,9 +136,311 @@ Consumed   |   27
 
 ```
 ---
-## How to test:
+## How do I test
 
-there is no make check script for this program.
+# test case 1 
+-- to test if the program displays correct error message when input less or more parameters than expected
+```
+./bounded-buffer 
+```
+should display
+```
+ "wrong parameters
+Usage: time_to_live(seconds) producer_number consumer_number [buffer_size]"
+```
+err message displayed as expected
+
+```
+./bounded-buffer 2
+```
+should display
+```
+ "wrong parameters
+Usage: time_to_live(seconds) producer_number consumer_number [buffer_size]"
+```
+err message displayed as expected
+
+```
+./bounded-buffer 2 2
+```
+should display
+```
+ "wrong parameters
+Usage: time_to_live(seconds) producer_number consumer_number [buffer_size]"
+```
+err message displayed as expected
+
+```
+./bounded-buffer 2 2 2
+```
+should display
+```
+ the results of execution correctly.
+results displayed as expected
+
+```
+./bounded-buffer 2 2 2 2
+```
+should display
+```
+ the results of execution correctly.
+results displayed as expected
+```
+./bounded-buffer 2 2 2 2 2
+```
+should display
+```
+ "wrong parameters
+Usage: time_to_live(seconds) producer_number consumer_number [buffer_size]"
+```
+err message displayed as expected
+
+
+# test case 2
+-- to test if the program displays correct error message when input invalid characters
+
+```
+./bounded-buffer  - - - -
+```
+```
+./bounded-buffer a a a a
+```
+```
+./bounded-buffer  	 	a
+```
+```
+./bounded-buffer -1 -2 -2 -2
+```
+should display
+```
+ "wrong parameters
+Usage: time_to_live(seconds) producer_number consumer_number [buffer_size]"
+```
+err message displayed as expected
+
+# test case 3
+-- to test if the program executes correctly when input 0 producer
+```
+./bounded-buffer 5 0 5 10
+```
+shoud display the execution results which there is no producer or consumer thread because consumers can't consume if there is no product produced by 0 producer.
+
+display:
+```
+Buffer Size               :  10
+Time To Live (seconds)    :   5
+Number of Producer threads:   0
+Number of Consumer threads:   5
+-------------------------------
+Initial Buffer:                 	[  -1^v  -1  -1  -1  -1  -1  -1  -1  -1  -1]
+-----------+---------
+Produced   |    0
+Consumed   |    0
+-----------+---------
+```
+correct.
+
+# test case 4
+-- to test if the program executes correctly when input 0 consumer, and if the producers rewrite the buffer while product is already in there and not consumed.
+```
+./bounded-buffer 5 5 0 10
+```
+shoud display the execution results while there is no consumer thread because there is no consumer to consume the products.
+display:
+```
+Buffer Size               :  10
+Time To Live (seconds)    :   5
+Number of Producer threads:   5
+Number of Consumer threads:   0
+-------------------------------
+Initial Buffer:                 	[  -1^v  -1  -1  -1  -1  -1  -1  -1  -1  -1]
+Producer  0: Total   1, Value   6	[   6v  -1^  -1  -1  -1  -1  -1  -1  -1  -1]
+Producer  0: Total   2, Value   7	[   6v   7  -1^  -1  -1  -1  -1  -1  -1  -1]
+Producer  4: Total   3, Value   1	[   6v   7   1  -1^  -1  -1  -1  -1  -1  -1]
+Producer  1: Total   4, Value   5	[   6v   7   1   5  -1^  -1  -1  -1  -1  -1]
+Producer  2: Total   5, Value   5	[   6v   7   1   5   5  -1^  -1  -1  -1  -1]
+Producer  2: Total   6, Value   6	[   6v   7   1   5   5   6  -1^  -1  -1  -1]
+Producer  2: Total   7, Value   8	[   6v   7   1   5   5   6   8  -1^  -1  -1]
+Producer  0: Total   8, Value   9	[   6v   7   1   5   5   6   8   9  -1^  -1]
+Producer  1: Total   9, Value   6	[   6v   7   1   5   5   6   8   9   6  -1^]
+Producer  3: Total  10, Value   2	[   6^v   7   1   5   5   6   8   9   6   2]
+-----------+---------
+Produced   |   10
+Consumed   |    0
+-----------+---------
+```
+correct.
+
+# test case 5
+-- to test if the program executes correctly when input 0 buffer_size
+```
+./bounded-buffer 2 2 2 0
+```
+should display
+```
+ error message
+displays:
+```
+"Please enter valid numbers
+Wrong parameters
+Usage: time_to_live(seconds) producer_number consumer_number [buffer_size]"
+```
+err message displayed as expected
+
+# test case 6
+-- to test if the program executes correctly when input 0 time period
+```
+./bounded-buffer 0 5 5 10
+```
+
+should display
+```
+ only the initial buffer and show the results with 0 produced and consumed because no time for prodecers and consumers to execute.
+display:
+```
+Buffer Size               :  10
+Time To Live (seconds)    :   0
+Number of Producer threads:   5
+Number of Consumer threads:   5
+-------------------------------
+Initial Buffer:                 	[  -1^v  -1  -1  -1  -1  -1  -1  -1  -1  -1]
+-----------+---------
+Produced   |    0
+Consumed   |    0
+-----------+---------
+```
+correct.
+
+# test case 7
+-- to test if the program works properly when there are more producers than consumers, by going through line by line to see if the "total" of consumed is less than or equal to that of produced.
+```
+./bounded-buffer 5 5 2 10
+```
+display:
+```
+Buffer Size               :  10
+Time To Live (seconds)    :   5
+Number of Producer threads:   5
+Number of Consumer threads:   2
+-------------------------------
+Initial Buffer:                 	[  -1^v  -1  -1  -1  -1  -1  -1  -1  -1  -1]
+Producer  0: Total   1, Value   6	[   6v  -1^  -1  -1  -1  -1  -1  -1  -1  -1]
+Consumer  0: Total   1, Value   6	[  -1  -1^v  -1  -1  -1  -1  -1  -1  -1  -1]
+Producer  4: Total   2, Value   1	[  -1   1v  -1^  -1  -1  -1  -1  -1  -1  -1]
+Consumer  1: Total   2, Value   1	[  -1  -1  -1^v  -1  -1  -1  -1  -1  -1  -1]
+Producer  0: Total   3, Value   9	[  -1  -1   9v  -1^  -1  -1  -1  -1  -1  -1]
+Producer  1: Total   4, Value   5	[  -1  -1   9v   5  -1^  -1  -1  -1  -1  -1]
+Producer  1: Total   5, Value   8	[  -1  -1   9v   5   8  -1^  -1  -1  -1  -1]
+Producer  2: Total   6, Value   5	[  -1  -1   9v   5   8   5  -1^  -1  -1  -1]
+Producer  0: Total   7, Value   6	[  -1  -1   9v   5   8   5   6  -1^  -1  -1]
+Producer  3: Total   8, Value   2	[  -1  -1   9v   5   8   5   6   2  -1^  -1]
+Consumer  1: Total   3, Value   9	[  -1  -1  -1   5v   8   5   6   2  -1^  -1]
+Producer  4: Total   9, Value   0	[  -1  -1  -1   5v   8   5   6   2   0  -1^]
+Producer  3: Total  10, Value   5	[  -1^  -1  -1   5v   8   5   6   2   0   5]
+Consumer  0: Total   4, Value   5	[  -1^  -1  -1  -1   8v   5   6   2   0   5]
+Producer  2: Total  11, Value   0	[   0  -1^  -1  -1   8v   5   6   2   0   5]
+Producer  1: Total  12, Value   9	[   0   9  -1^  -1   8v   5   6   2   0   5]
+Consumer  1: Total   5, Value   8	[   0   9  -1^  -1  -1   5v   6   2   0   5]
+Producer  0: Total  13, Value   3	[   0   9   3  -1^  -1   5v   6   2   0   5]
+Producer  1: Total  14, Value   2	[   0   9   3   2  -1^   5v   6   2   0   5]
+Consumer  1: Total   6, Value   5	[   0   9   3   2  -1^  -1   6v   2   0   5]
+Producer  3: Total  15, Value   9	[   0   9   3   2   9  -1^   6v   2   0   5]
+Producer  0: Total  16, Value   1	[   0   9   3   2   9   1   6^v   2   0   5]
+Consumer  0: Total   7, Value   6	[   0   9   3   2   9   1  -1^   2v   0   5]
+Producer  4: Total  17, Value   2	[   0   9   3   2   9   1   2   2^v   0   5]
+Consumer  1: Total   8, Value   2	[   0   9   3   2   9   1   2  -1^   0v   5]
+Producer  1: Total  18, Value   4	[   0   9   3   2   9   1   2   4   0^v   5]
+Consumer  0: Total   9, Value   0	[   0   9   3   2   9   1   2   4  -1^   5v]
+Producer  2: Total  19, Value   6	[   0   9   3   2   9   1   2   4   6   5^v]
+Consumer  1: Total  10, Value   5	[   0v   9   3   2   9   1   2   4   6  -1^]
+Producer  3: Total  20, Value   4	[   0^v   9   3   2   9   1   2   4   6   4]
+Consumer  1: Total  11, Value   0	[  -1^   9v   3   2   9   1   2   4   6   4]
+Producer  0: Total  21, Value   0	[   0   9^v   3   2   9   1   2   4   6   4]
+Consumer  0: Total  12, Value   9	[   0  -1^   3v   2   9   1   2   4   6   4]
+Producer  1: Total  22, Value   6	[   0   6   3^v   2   9   1   2   4   6   4]
+Consumer  0: Total  13, Value   3	[   0   6  -1^   2v   9   1   2   4   6   4]
+Producer  4: Total  23, Value   1	[   0   6   1   2^v   9   1   2   4   6   4]
+Consumer  1: Total  14, Value   2	[   0   6   1  -1^   9v   1   2   4   6   4]
+Producer  3: Total  24, Value   5	[   0   6   1   5   9^v   1   2   4   6   4]
+Consumer  1: Total  15, Value   9	[   0   6   1   5  -1^   1v   2   4   6   4]
+Producer  0: Total  25, Value   7	[   0   6   1   5   7   1^v   2   4   6   4]
+Consumer  0: Total  16, Value   1	[   0   6   1   5   7  -1^   2v   4   6   4]
+Producer  2: Total  26, Value   6	[   0   6   1   5   7   6   2^v   4   6   4]
+Consumer  1: Total  17, Value   2	[   0   6   1   5   7   6  -1^   4v   6   4]
+Producer  3: Total  27, Value   2	[   0   6   1   5   7   6   2   4^v   6   4]
+Consumer  1: Total  18, Value   4	[   0   6   1   5   7   6   2  -1^   6v   4]
+Producer  1: Total  28, Value   9	[   0   6   1   5   7   6   2   9   6^v   4]
+Consumer  1: Total  19, Value   6	[   0   6   1   5   7   6   2   9  -1^   4v]
+Producer  4: Total  29, Value   4	[   0   6   1   5   7   6   2   9   4   4^v]
+-----------+---------
+Produced   |   29
+Consumed   |   19
+-----------+---------
+```
+correct.
+
+# test case 8 
+-- to test if the program works properly when there are more producers than consumers, by going through line by line to see if the "total" of consumed is less than or equal to that of produced.
+```
+./bounded-buffer 5 2 5 10
+```
+display:
+```
+Buffer Size               :  10
+Time To Live (seconds)    :   5
+Number of Producer threads:   2
+Number of Consumer threads:   5
+-------------------------------
+Initial Buffer:                 	[  -1^v  -1  -1  -1  -1  -1  -1  -1  -1  -1]
+Producer  0: Total   1, Value   6	[   6v  -1^  -1  -1  -1  -1  -1  -1  -1  -1]
+Consumer  1: Total   1, Value   6	[  -1  -1^v  -1  -1  -1  -1  -1  -1  -1  -1]
+Producer  1: Total   2, Value   5	[  -1   5v  -1^  -1  -1  -1  -1  -1  -1  -1]
+Consumer  4: Total   2, Value   5	[  -1  -1  -1^v  -1  -1  -1  -1  -1  -1  -1]
+Producer  0: Total   3, Value   2	[  -1  -1   2v  -1^  -1  -1  -1  -1  -1  -1]
+Consumer  0: Total   3, Value   2	[  -1  -1  -1  -1^v  -1  -1  -1  -1  -1  -1]
+Producer  1: Total   4, Value   9	[  -1  -1  -1   9v  -1^  -1  -1  -1  -1  -1]
+Consumer  3: Total   4, Value   9	[  -1  -1  -1  -1  -1^v  -1  -1  -1  -1  -1]
+Producer  1: Total   5, Value   6	[  -1  -1  -1  -1   6v  -1^  -1  -1  -1  -1]
+Consumer  1: Total   5, Value   6	[  -1  -1  -1  -1  -1  -1^v  -1  -1  -1  -1]
+Producer  0: Total   6, Value   0	[  -1  -1  -1  -1  -1   0v  -1^  -1  -1  -1]
+Consumer  2: Total   6, Value   0	[  -1  -1  -1  -1  -1  -1  -1^v  -1  -1  -1]
+Producer  1: Total   7, Value   7	[  -1  -1  -1  -1  -1  -1   7v  -1^  -1  -1]
+Consumer  3: Total   7, Value   7	[  -1  -1  -1  -1  -1  -1  -1  -1^v  -1  -1]
+Producer  0: Total   8, Value   0	[  -1  -1  -1  -1  -1  -1  -1   0v  -1^  -1]
+Consumer  0: Total   8, Value   0	[  -1  -1  -1  -1  -1  -1  -1  -1  -1^v  -1]
+Producer  1: Total   9, Value   7	[  -1  -1  -1  -1  -1  -1  -1  -1   7v  -1^]
+Consumer  4: Total   9, Value   7	[  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1^v]
+Producer  0: Total  10, Value   2	[  -1^  -1  -1  -1  -1  -1  -1  -1  -1   2v]
+Consumer  1: Total  10, Value   2	[  -1^v  -1  -1  -1  -1  -1  -1  -1  -1  -1]
+Producer  1: Total  11, Value   9	[   9v  -1^  -1  -1  -1  -1  -1  -1  -1  -1]
+Consumer  2: Total  11, Value   9	[  -1  -1^v  -1  -1  -1  -1  -1  -1  -1  -1]
+Producer  0: Total  12, Value   6	[  -1   6v  -1^  -1  -1  -1  -1  -1  -1  -1]
+Consumer  3: Total  12, Value   6	[  -1  -1  -1^v  -1  -1  -1  -1  -1  -1  -1]
+Producer  1: Total  13, Value   9	[  -1  -1   9v  -1^  -1  -1  -1  -1  -1  -1]
+Consumer  0: Total  13, Value   9	[  -1  -1  -1  -1^v  -1  -1  -1  -1  -1  -1]
+Producer  0: Total  14, Value   9	[  -1  -1  -1   9v  -1^  -1  -1  -1  -1  -1]
+Consumer  1: Total  14, Value   9	[  -1  -1  -1  -1  -1^v  -1  -1  -1  -1  -1]
+Producer  1: Total  15, Value   8	[  -1  -1  -1  -1   8v  -1^  -1  -1  -1  -1]
+Consumer  4: Total  15, Value   8	[  -1  -1  -1  -1  -1  -1^v  -1  -1  -1  -1]
+Producer  0: Total  16, Value   0	[  -1  -1  -1  -1  -1   0v  -1^  -1  -1  -1]
+Consumer  2: Total  16, Value   0	[  -1  -1  -1  -1  -1  -1  -1^v  -1  -1  -1]
+-----------+---------
+Produced   |   16
+Consumed   |   16
+-----------+---------
+```
+
+correct.
+
+# test case 9
+# test case 10
+# test case 11
+# test case 12
+# test case 13
+# test case 14
+# test case 15
+# test case 16
+# test case 17
 ---
 
 ## Known bugs & limitations:
