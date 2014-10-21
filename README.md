@@ -1,8 +1,6 @@
 # CS441/541
-## Project 2 Template
+## Project 2
 
-This repository contains the template materials for project 2.
 
-You may use this file for your project documentation.
-
-ReadMe file for part1 is in that folder
+ReadMe file for part1 is in [part1](part1/README.md)
+ReadMe file for part2 is in [part2](part2/README.md)
