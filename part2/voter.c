@@ -44,6 +44,9 @@ void start_booth() {
     // voters in sequence: rep, dem, ind
     pthread_t *voters = (pthread_t *) malloc(sizeof(pthread_t) * total);
     voter_t *confs = (voter_t *) malloc(sizeof(voter_t) * total);
+    repub_q = (int *) malloc(sizeof(int) * num_repub);
+    democ_q = (int *) malloc(sizeof(int) * num_democ);
+    indep_q = (int *) malloc(sizeof(int) * num_indep);
 
     booth = (char *) malloc(sizeof(char) * num_booth);
     for (i = 0; i < num_booth; ++i) {
@@ -54,6 +57,7 @@ void start_booth() {
     semaphore_create(&station_lock, 1);
     semaphore_create(&mutex, 1);
     semaphore_create(&lock, 1);
+    semaphore_create(&q_lock, 1);
     srand(time(NULL));
 
     semaphore_wait(&station_lock);
@@ -93,6 +97,7 @@ void start_booth() {
     semaphore_destroy(&sem_booth);
     semaphore_destroy(&lock);
     semaphore_destroy(&mutex);
+    semaphore_destroy(&q_lock);
 }
 
 void *voter(void *arg) {
@@ -119,6 +124,7 @@ void *voter(void *arg) {
 
     semaphore_wait(&station_lock);
     semaphore_post(&station_lock);
+
     /** The station opened **/
     message = "Entering the polling station";
     buf_str = buffer2str(booth, num_booth);
@@ -129,33 +135,64 @@ void *voter(void *arg) {
     /** Registration **/
     usleep(regi_time);
 
+    semaphore_wait(&q_lock);
+    if ('I' == v.type) {
+        add(indep_q, v.id, &i_e);
+    } else if ('R' == v.type) {
+        add(repub_q, v.id, &r_e);
+    } else if ('D' == v.type) {
+        add(democ_q, v.id, &d_e);
+    }
+    semaphore_post(&q_lock);
+
     /** Try entering a booth **/
     semaphore_wait(&sem_booth);
-    if ('I' != v.type) {
 
-        if ('R' == v.type) {
-            while (true) {
-                semaphore_wait(&lock);
-                if ('D' != which || findNo('D')) {
+    if ('R' == v.type) {
+        while (true) {
+            semaphore_wait(&lock);
+            if (findNo('D') && next(repub_q, r_s, r_e) == v.id) {
+                if (d_e != d_s && findNo('R') && 'R' == which) {
+                    semaphore_post(&lock);
+                } else {
+                    pop(repub_q, &r_s, &r_e);
                     which = 'R';
                     semaphore_post(&lock);
                     break;
-                } else {
-                    semaphore_post(&lock);
                 }
+            } else {
+                semaphore_post(&lock);
             }
         }
+    }
 
-        if ('D' == v.type) {
-            while (true) {
-                semaphore_wait(&lock);
-                if ('R' != which || findNo('R')) {
+    if ('D' == v.type) {
+        while (true) {
+            semaphore_wait(&lock);
+            if (findNo('R') && next(democ_q, d_s, d_e) == v.id) {
+                if (r_e != r_s && findNo('D') && 'D' == which) {
+                    semaphore_post(&lock);
+                } else {
+                    pop(democ_q, &d_s, &d_e);
                     which = 'D';
                     semaphore_post(&lock);
                     break;
-                } else {
-                    semaphore_post(&lock);
                 }
+            } else {
+                semaphore_post(&lock);
+            }
+        }
+    }
+
+    if ('I' == v.type) {
+        while (true) {
+            semaphore_wait(&lock);
+            if (next(indep_q, i_s, i_e) == v.id) {
+                pop(indep_q, &i_s, &i_e);
+                semaphore_post(&lock);
+                break;
+            } else {
+                semaphore_post(&lock);
             }
         }
     }
@@ -255,4 +292,26 @@ bool findNo(char type) {
         }
     }
     return true;
+}
+
+void add(int *queue, int val, int *end) {
+    queue[(*end)++] = val;
+}
+
+int pop(int *queue, int *start, int *end) {
+    int i;
+    if (*start < *end) {
+        i = (*start)++;
+        return queue[i];
+    } else {
+        return -1;
+    }
+}
+
+int next(int *queue, int start, int end) {
+    if (start < end) {
+        return queue[start];
+    } else {
+        return -1;
+    }
 }
