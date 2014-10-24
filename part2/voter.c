@@ -1,6 +1,6 @@
 /*
  *
- * Author: Sanhu Li
+ * Author: Sanhu Li,Huifeng Zhang
  * CS 441/541: Finicky Voter (Assignment 2 Part 2)
  * Oct. 20, 2014
  */
@@ -14,13 +14,16 @@ int main(int argc, char *argv[]) {
     if (argc <= 5) {
         for (i = 1; i < argc; ++i) {
             nums[i - 1] = strtol(argv[i], NULL, 10);
-        }
+            }
 
+    if (nums[1] > 0 && nums[0] > 0&&nums[2] > 0 && nums[3] > 0){
         num_booth = nums[0];
         num_repub = nums[1];
         num_democ = nums[2];
         num_indep = nums[3];
         start_booth();
+        } else
+            usage();
     } else {
         usage();
     }
