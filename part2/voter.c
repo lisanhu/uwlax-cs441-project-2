@@ -16,6 +16,20 @@ int main(int argc, char *argv[]) {
             nums[i - 1] = strtol(argv[i], NULL, 10);
         }
 
+        if (nums[0] <= 0) {
+            fprintf(stderr, "Input parameters error: num_booth can not be less than or equal to zero.");
+            exit(-1);
+        } else if (nums[1] < 0) {
+            fprintf(stderr, "Input parameters error: num of Republicans can not be less than zero.");
+            exit(-1);
+        } else if (nums[2] < 0) {
+            fprintf(stderr, "Input parameters error: num of Democrats can not be less than zero.");
+            exit(-1);
+        } else if (nums[3] < 0) {
+            fprintf(stderr, "Input parameters error: num of Independents can not be less than zero.");
+            exit(-1);
+        }
+
         num_booth = nums[0];
         num_repub = nums[1];
         num_democ = nums[2];
